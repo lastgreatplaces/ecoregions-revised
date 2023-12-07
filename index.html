@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/Ecoregions_1.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:20, minZoom:3
+        }).fitBounds([[6.718197936196366,-126.59581863787453],[56.78222206284568,-10.931998333688732]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            map.setMaxBounds(map.getBounds());
+        }
+        map.createPane('pane_OpenStreetMap_0');
+        map.getPane('pane_OpenStreetMap_0').style.zIndex = 400;
+        var layer_OpenStreetMap_0 = L.tileLayer('http://tile.osm.org/{z}/{x}/{y}.png', {
+            pane: 'pane_OpenStreetMap_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 3,
+            maxZoom: 20,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_OpenStreetMap_0;
+        map.addLayer(layer_OpenStreetMap_0);
+        function pop_Ecoregions_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ECO_NAME'] !== null ? autolinker.link(feature.properties['ECO_NAME'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Ecoregions_1_0() {
+            return {
+                pane: 'pane_Ecoregions_1',
+                opacity: 1,
+                color: 'rgba(51,160,44,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,182,54,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Ecoregions_1');
+        map.getPane('pane_Ecoregions_1').style.zIndex = 401;
+        map.getPane('pane_Ecoregions_1').style['mix-blend-mode'] = 'normal';
+        var layer_Ecoregions_1 = new L.geoJson(json_Ecoregions_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Ecoregions_1',
+            layerName: 'layer_Ecoregions_1',
+            pane: 'pane_Ecoregions_1',
+            onEachFeature: pop_Ecoregions_1,
+            style: style_Ecoregions_1_0,
+        });
+        bounds_group.addLayer(layer_Ecoregions_1);
+        map.addLayer(layer_Ecoregions_1);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/Ecoregions_1.png" /> Ecoregions': layer_Ecoregions_1,"OpenStreetMap": layer_OpenStreetMap_0,},{collapsed:false}).addTo(map);
+        setBounds();
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"ECO_NAME": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_ECO_NAME = document.createElement('div');
+            div_ECO_NAME.id = "div_ECO_NAME";
+            div_ECO_NAME.className= "filterselect";
+            document.getElementById("menu").appendChild(div_ECO_NAME);
+            sel_ECO_NAME = document.createElement('select');
+            sel_ECO_NAME.multiple = true;
+            sel_ECO_NAME.size = 10;
+            sel_ECO_NAME.id = "sel_ECO_NAME";
+            var ECO_NAME_options_str = "<option value='' unselected></option>";
+            sel_ECO_NAME.onchange = function(){filterFunc()};
+            ECO_NAME_options_str  += '<option value="Apache Highlands">Apache Highlands</option>';
+            ECO_NAME_options_str  += '<option value="Arizona-New Mexico Mountains">Arizona-New Mexico Mountains</option>';
+            ECO_NAME_options_str  += '<option value="Black Hills">Black Hills</option>';
+            ECO_NAME_options_str  += '<option value="California Central Coast">California Central Coast</option>';
+            ECO_NAME_options_str  += '<option value="California North Coast">California North Coast</option>';
+            ECO_NAME_options_str  += '<option value="California South Coast">California South Coast</option>';
+            ECO_NAME_options_str  += '<option value="Canadian Rocky Mountains">Canadian Rocky Mountains</option>';
+            ECO_NAME_options_str  += '<option value="Central Appalachian Forest">Central Appalachian Forest</option>';
+            ECO_NAME_options_str  += '<option value="Central Mixed-Grass Prairie">Central Mixed-Grass Prairie</option>';
+            ECO_NAME_options_str  += '<option value="Central Shortgrass Prairie">Central Shortgrass Prairie</option>';
+            ECO_NAME_options_str  += '<option value="Central Tallgrass Prairie">Central Tallgrass Prairie</option>';
+            ECO_NAME_options_str  += '<option value="Chesapeake Bay Lowlands">Chesapeake Bay Lowlands</option>';
+            ECO_NAME_options_str  += '<option value="Chihuahuan Desert">Chihuahuan Desert</option>';
+            ECO_NAME_options_str  += '<option value="Colorado Plateau">Colorado Plateau</option>';
+            ECO_NAME_options_str  += '<option value="Columbia Plateau">Columbia Plateau</option>';
+            ECO_NAME_options_str  += '<option value="Crosstimbers And Southern Tallgrass Prairie">Crosstimbers And Southern Tallgrass Prairie</option>';
+            ECO_NAME_options_str  += '<option value="Cumberlands And Southern Ridge And Valley">Cumberlands And Southern Ridge And Valley</option>';
+            ECO_NAME_options_str  += '<option value="Dakota Mixed-Grass Prairie">Dakota Mixed-Grass Prairie</option>';
+            ECO_NAME_options_str  += '<option value="East Cascades - Modoc Plateau">East Cascades - Modoc Plateau</option>';
+            ECO_NAME_options_str  += '<option value="East Gulf Coastal Plain">East Gulf Coastal Plain</option>';
+            ECO_NAME_options_str  += '<option value="Edwards Plateau">Edwards Plateau</option>';
+            ECO_NAME_options_str  += '<option value="Fescue-Mixed Grass Prairie">Fescue-Mixed Grass Prairie</option>';
+            ECO_NAME_options_str  += '<option value="Florida Peninsula">Florida Peninsula</option>';
+            ECO_NAME_options_str  += '<option value="Great Basin">Great Basin</option>';
+            ECO_NAME_options_str  += '<option value="Great Central Valley">Great Central Valley</option>';
+            ECO_NAME_options_str  += '<option value="Great Lakes">Great Lakes</option>';
+            ECO_NAME_options_str  += '<option value="Gulf Coast Prairies And Marshes">Gulf Coast Prairies And Marshes</option>';
+            ECO_NAME_options_str  += '<option value="High Allegheny Plateau">High Allegheny Plateau</option>';
+            ECO_NAME_options_str  += '<option value="Interior Low Plateau">Interior Low Plateau</option>';
+            ECO_NAME_options_str  += '<option value="Klamath Mountains">Klamath Mountains</option>';
+            ECO_NAME_options_str  += '<option value="Lower New England / Northern Piedmont">Lower New England / Northern Piedmont</option>';
+            ECO_NAME_options_str  += '<option value="Mid-Atlantic Coastal Plain">Mid-Atlantic Coastal Plain</option>';
+            ECO_NAME_options_str  += '<option value="Middle Rockies - Blue Mountains">Middle Rockies - Blue Mountains</option>';
+            ECO_NAME_options_str  += '<option value="Mississippi River Alluvial Plain">Mississippi River Alluvial Plain</option>';
+            ECO_NAME_options_str  += '<option value="Mojave Desert">Mojave Desert</option>';
+            ECO_NAME_options_str  += '<option value="North Atlantic Coast">North Atlantic Coast</option>';
+            ECO_NAME_options_str  += '<option value="North Cascades">North Cascades</option>';
+            ECO_NAME_options_str  += '<option value="North Central Tillplain">North Central Tillplain</option>';
+            ECO_NAME_options_str  += '<option value="Northern Appalachian / Acadian">Northern Appalachian / Acadian</option>';
+            ECO_NAME_options_str  += '<option value="Northern Great Plains Steppe">Northern Great Plains Steppe</option>';
+            ECO_NAME_options_str  += '<option value="Northern Tallgrass Prairie">Northern Tallgrass Prairie</option>';
+            ECO_NAME_options_str  += '<option value="Okanagan">Okanagan</option>';
+            ECO_NAME_options_str  += '<option value="Osage Plains/Flint Hills Prairie">Osage Plains/Flint Hills Prairie</option>';
+            ECO_NAME_options_str  += '<option value="Ouachita Mountains">Ouachita Mountains</option>';
+            ECO_NAME_options_str  += '<option value="Ozarks">Ozarks</option>';
+            ECO_NAME_options_str  += '<option value="Pacific Northwest Coast">Pacific Northwest Coast</option>';
+            ECO_NAME_options_str  += '<option value="Piedmont">Piedmont</option>';
+            ECO_NAME_options_str  += '<option value="Prairie-Forest Border">Prairie-Forest Border</option>';
+            ECO_NAME_options_str  += '<option value="Sierra Nevada">Sierra Nevada</option>';
+            ECO_NAME_options_str  += '<option value="Sonoran Desert">Sonoran Desert</option>';
+            ECO_NAME_options_str  += '<option value="South Atlantic Coastal Plain">South Atlantic Coastal Plain</option>';
+            ECO_NAME_options_str  += '<option value="Southern Blue Ridge">Southern Blue Ridge</option>';
+            ECO_NAME_options_str  += '<option value="Southern Rocky Mountains">Southern Rocky Mountains</option>';
+            ECO_NAME_options_str  += '<option value="Southern Shortgrass Prairie">Southern Shortgrass Prairie</option>';
+            ECO_NAME_options_str  += '<option value="St. Lawrence - Champlain Valley">St. Lawrence - Champlain Valley</option>';
+            ECO_NAME_options_str  += '<option value="Superior Mixed Forest">Superior Mixed Forest</option>';
+            ECO_NAME_options_str  += '<option value="Tamaulipan Thorn Scrub">Tamaulipan Thorn Scrub</option>';
+            ECO_NAME_options_str  += '<option value="Tropical Florida">Tropical Florida</option>';
+            ECO_NAME_options_str  += '<option value="Upper East Gulf Coastal Plain">Upper East Gulf Coastal Plain</option>';
+            ECO_NAME_options_str  += '<option value="Upper West Gulf Coastal Plain">Upper West Gulf Coastal Plain</option>';
+            ECO_NAME_options_str  += '<option value="Utah High Plateaus">Utah High Plateaus</option>';
+            ECO_NAME_options_str  += '<option value="Utah-Wyoming Rocky Mountains">Utah-Wyoming Rocky Mountains</option>';
+            ECO_NAME_options_str  += '<option value="West Cascades">West Cascades</option>';
+            ECO_NAME_options_str  += '<option value="West Gulf Coastal Plain">West Gulf Coastal Plain</option>';
+            ECO_NAME_options_str  += '<option value="Western Allegheny Plateau">Western Allegheny Plateau</option>';
+            ECO_NAME_options_str  += '<option value="Willamette Valley - Puget Trough - Georgia Basin: Temperate Broadleaf And Mixed Forests">Willamette Valley - Puget Trough - Georgia Basin: Temperate Broadleaf And Mixed Forests</option>';
+            ECO_NAME_options_str  += '<option value="Willamette Valley - Puget Trough - Georgia Basin: Temperate Conifer Forests">Willamette Valley - Puget Trough - Georgia Basin: Temperate Conifer Forests</option>';
+            ECO_NAME_options_str  += '<option value="Wyoming Basins">Wyoming Basins</option>';
+            sel_ECO_NAME.innerHTML = ECO_NAME_options_str;
+            div_ECO_NAME.appendChild(sel_ECO_NAME);
+            var lab_ECO_NAME = document.createElement('div');
+            lab_ECO_NAME.innerHTML = 'ECO_NAME';
+            lab_ECO_NAME.className = 'filterlabel';
+            div_ECO_NAME.appendChild(lab_ECO_NAME);
+            var reset_ECO_NAME = document.createElement('div');
+            reset_ECO_NAME.innerHTML = 'clear filter';
+            reset_ECO_NAME.className = 'filterlabel';
+            reset_ECO_NAME.onclick = function() {
+                var options = document.getElementById("sel_ECO_NAME").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_ECO_NAME.appendChild(reset_ECO_NAME);
+        </script>
+    </body>
+</html>
